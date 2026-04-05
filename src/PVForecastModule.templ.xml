@@ -23,34 +23,30 @@
                 <Parameter Id="%AID%_UP-%TT%%CC%002" Name="CH%C%RefreshInterval" ParameterType="%AID%_PT-PVFRefreshInterval" Offset="0" BitOffset="0" Text="Automatische Aktualisierung" Value="2" />
               </Union>
 
-              <!-- Latitude degrees * 100 (Bytes 2-3, signed) -->
-              <Union SizeInBit="16">
+              <!-- Location (Bytes 2-10): LocationType (1 byte) + Latitude (4 bytes) + Longitude (4 bytes) -->
+              <Union SizeInBit="72">
                 <Memory CodeSegment="%MID%" Offset="2" BitOffset="0" />
-                <Parameter Id="%AID%_UP-%TT%%CC%003" Name="CH%C%Latitude" ParameterType="%AID%_PT-PVFLatitude" Offset="0" BitOffset="0" Text="Breitengrad (× 100)" Value="4820" />
+                <Parameter Id="%AID%_UP-%TT%%CC%003" Name="CH%C%LocationType" ParameterType="%AID%_PT-PVFLocationType" Offset="0" BitOffset="0" Text="Ort für PV-Anlage" Value="0" />
+                <Parameter Id="%AID%_UP-%TT%%CC%004" Name="CH%C%Latitude" ParameterType="%AID%_PT-Latitude" Offset="1" BitOffset="0" Text="Breitengrad" Value="48.2083" />
+                <Parameter Id="%AID%_UP-%TT%%CC%005" Name="CH%C%Longitude" ParameterType="%AID%_PT-Longitude" Offset="5" BitOffset="0" Text="Längengrad" Value="16.3731" />
               </Union>
 
-              <!-- Longitude degrees * 100 (Bytes 4-5, signed) -->
-              <Union SizeInBit="16">
-                <Memory CodeSegment="%MID%" Offset="4" BitOffset="0" />
-                <Parameter Id="%AID%_UP-%TT%%CC%004" Name="CH%C%Longitude" ParameterType="%AID%_PT-PVFLongitude" Offset="0" BitOffset="0" Text="Längengrad (× 100)" Value="1637" />
-              </Union>
-
-              <!-- Plane tilt 0..90 degrees (Byte 6) -->
+              <!-- Plane tilt 0..90 degrees (Byte 11) -->
               <Union SizeInBit="8">
-                <Memory CodeSegment="%MID%" Offset="6" BitOffset="0" />
-                <Parameter Id="%AID%_UP-%TT%%CC%005" Name="CH%C%Tilt" ParameterType="%AID%_PT-PVFTilt" Offset="0" BitOffset="0" Text="Neigungswinkel (0=waagerecht, 90=senkrecht)" Value="35" />
+                <Memory CodeSegment="%MID%" Offset="11" BitOffset="0" />
+                <Parameter Id="%AID%_UP-%TT%%CC%006" Name="CH%C%Tilt" ParameterType="%AID%_PT-PVFTilt" Offset="0" BitOffset="0" Text="Neigungswinkel" SuffixText=" °" Value="35" />
               </Union>
 
-              <!-- Azimuth degrees (Bytes 7-8, signed) -->
+              <!-- Azimuth degrees (Bytes 12-13, signed) -->
               <Union SizeInBit="16">
-                <Memory CodeSegment="%MID%" Offset="7" BitOffset="0" />
-                <Parameter Id="%AID%_UP-%TT%%CC%006" Name="CH%C%Azimuth" ParameterType="%AID%_PT-PVFAzimuth" Offset="0" BitOffset="0" Text="Azimut (0=Süd, -90=Ost, 90=West)" Value="0" />
+                <Memory CodeSegment="%MID%" Offset="12" BitOffset="0" />
+                <Parameter Id="%AID%_UP-%TT%%CC%007" Name="CH%C%Azimuth" ParameterType="%AID%_PT-PVFAzimuth" Offset="0" BitOffset="0" Text="Azimut" SuffixText=" °" Value="0" />
               </Union>
 
-              <!-- Peak power kWp * 100 (Bytes 9-10) -->
+              <!-- Peak power kWp * 100 (Bytes 14-15) -->
               <Union SizeInBit="16">
-                <Memory CodeSegment="%MID%" Offset="9" BitOffset="0" />
-                <Parameter Id="%AID%_UP-%TT%%CC%007" Name="CH%C%PeakPower" ParameterType="%AID%_PT-PVFPeakPower" Offset="0" BitOffset="0" Text="Spitzenleistung (kWp × 100)" Value="500" />
+                <Memory CodeSegment="%MID%" Offset="14" BitOffset="0" />
+                <Parameter Id="%AID%_UP-%TT%%CC%008" Name="CH%C%PeakPower" ParameterType="%AID%_PT-PVFPeakPower" Offset="0" BitOffset="0" Text="Spitzenleistung" SuffixText=" × 10 Wp" Value="500" />
               </Union>
             </Parameters>
             <ParameterRefs>
@@ -60,46 +56,92 @@
               <ParameterRef Id="%AID%_UP-%TT%%CC%001_R-%TT%%CC%00101" RefId="%AID%_UP-%TT%%CC%001" />
               <!-- Refresh interval -->
               <ParameterRef Id="%AID%_UP-%TT%%CC%002_R-%TT%%CC%00201" RefId="%AID%_UP-%TT%%CC%002" />
-              <!-- Latitude -->
+              <!-- Location type -->
               <ParameterRef Id="%AID%_UP-%TT%%CC%003_R-%TT%%CC%00301" RefId="%AID%_UP-%TT%%CC%003" />
-              <!-- Longitude -->
+              <!-- Latitude -->
               <ParameterRef Id="%AID%_UP-%TT%%CC%004_R-%TT%%CC%00401" RefId="%AID%_UP-%TT%%CC%004" />
-              <!-- Tilt -->
+              <!-- Longitude -->
               <ParameterRef Id="%AID%_UP-%TT%%CC%005_R-%TT%%CC%00501" RefId="%AID%_UP-%TT%%CC%005" />
-              <!-- Azimuth -->
+              <!-- Tilt -->
               <ParameterRef Id="%AID%_UP-%TT%%CC%006_R-%TT%%CC%00601" RefId="%AID%_UP-%TT%%CC%006" />
-              <!-- Peak power -->
+              <!-- Azimuth -->
               <ParameterRef Id="%AID%_UP-%TT%%CC%007_R-%TT%%CC%00701" RefId="%AID%_UP-%TT%%CC%007" />
+              <!-- Peak power -->
+              <ParameterRef Id="%AID%_UP-%TT%%CC%008_R-%TT%%CC%00801" RefId="%AID%_UP-%TT%%CC%008" />
             </ParameterRefs>
             <ComObjectTable>
               <!-- PV-Ertrag Heute (kWh) -->
-              <ComObject Id="%AID%_O-%TT%%CC%000" Number="%K0%" Name="CH%C%YieldToday" Text="" ObjectSize="2 Bytes" DatapointType="DPST-9-1" FunctionText="" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="%AID%_O-%TT%%CC%000" Number="%K0%" Name="CH%C%YieldToday" Text="" ObjectSize="4 Bytes" DatapointType="DPST-13-13" FunctionText="" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
               <!-- PV-Ertrag Morgen (kWh) -->
-              <ComObject Id="%AID%_O-%TT%%CC%001" Number="%K1%" Name="CH%C%YieldTomorrow" Text="" ObjectSize="2 Bytes" DatapointType="DPST-9-1" FunctionText="" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
-              <!-- Aktuelle Leistung (W) -->
-              <ComObject Id="%AID%_O-%TT%%CC%002" Number="%K2%" Name="CH%C%PowerNow" Text="" ObjectSize="2 Bytes" DatapointType="DPST-9-20" FunctionText="" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
-              <!-- Leistung nächste Stunde (W) -->
-              <ComObject Id="%AID%_O-%TT%%CC%003" Number="%K3%" Name="CH%C%PowerNextHour" Text="" ObjectSize="2 Bytes" DatapointType="DPST-9-20" FunctionText="" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
-              <!-- Spitzenleistung Heute (W) -->
-              <ComObject Id="%AID%_O-%TT%%CC%004" Number="%K4%" Name="CH%C%PeakPowerToday" Text="" ObjectSize="2 Bytes" DatapointType="DPST-9-20" FunctionText="" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="%AID%_O-%TT%%CC%001" Number="%K1%" Name="CH%C%YieldTomorrow" Text="" ObjectSize="4 Bytes" DatapointType="DPST-13-13" FunctionText="" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <!-- Aktuelle Leistung (kW) -->
+              <ComObject Id="%AID%_O-%TT%%CC%002" Number="%K2%" Name="CH%C%PowerNow" Text="" ObjectSize="4 Bytes" DatapointType="DPST-14-56" FunctionText="" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <!-- Leistung nächste Stunde (kW) -->
+              <ComObject Id="%AID%_O-%TT%%CC%003" Number="%K3%" Name="CH%C%PowerNextHour" Text="" ObjectSize="4 Bytes" DatapointType="DPST-14-56" FunctionText="" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <!-- Spitzenleistung Heute (kW) -->
+              <ComObject Id="%AID%_O-%TT%%CC%004" Number="%K4%" Name="CH%C%PeakPowerToday" Text="" ObjectSize="4 Bytes" DatapointType="DPST-14-56" FunctionText="" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
               <!-- Zeitpunkt Spitzenleistung Heute (Uhrzeit) -->
               <ComObject Id="%AID%_O-%TT%%CC%005" Number="%K5%" Name="CH%C%PeakTimeToday" Text="" ObjectSize="3 Bytes" DatapointType="DPST-10-1" FunctionText="" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
             </ComObjectTable>
             <ComObjectRefs>
               <!-- PV-Ertrag Heute -->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%000_R-%TT%%CC%00001" RefId="%AID%_O-%TT%%CC%000" Name="CH%C%YieldToday" Text="PV-Ertrag Heute" FunctionText="PVForecast: kWh" Priority="Low" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%000_R-%TT%%CC%00001" RefId="%AID%_O-%TT%%CC%000" Name="CH%C%YieldToday" Text="{{0:PV %C%}}: Ertrag Heute" FunctionText="PV %C%: Ausgang, Ertrag, kWh" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" Priority="Low" />
               <!-- PV-Ertrag Morgen -->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%001_R-%TT%%CC%00101" RefId="%AID%_O-%TT%%CC%001" Name="CH%C%YieldTomorrow" Text="PV-Ertrag Morgen" FunctionText="PVForecast: kWh" Priority="Low" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%001_R-%TT%%CC%00101" RefId="%AID%_O-%TT%%CC%001" Name="CH%C%YieldTomorrow" Text="{{0:PV %C%}}: Ertrag Morgen" FunctionText="PV %C%: Ausgang, Ertrag, kWh" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" Priority="Low" />
               <!-- Aktuelle Leistung -->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%002_R-%TT%%CC%00201" RefId="%AID%_O-%TT%%CC%002" Name="CH%C%PowerNow" Text="Aktuelle PV-Leistung" FunctionText="PVForecast: W" Priority="Low" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%002_R-%TT%%CC%00201" RefId="%AID%_O-%TT%%CC%002" Name="CH%C%PowerNow" Text="{{0:PV %C%}}: Aktuelle Leistung" FunctionText="PV %C%: Ausgang, Leistung, W" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" Priority="Low" />
               <!-- Nächste Stunde Leistung -->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%003_R-%TT%%CC%00301" RefId="%AID%_O-%TT%%CC%003" Name="CH%C%PowerNextHour" Text="PV-Leistung nächste Stunde" FunctionText="PVForecast: W" Priority="Low" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%003_R-%TT%%CC%00301" RefId="%AID%_O-%TT%%CC%003" Name="CH%C%PowerNextHour" Text="{{0:PV %C%}}: Leistung nächste Stunde" FunctionText="PV %C%: Ausgang, Leistung, W" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" Priority="Low" />
               <!-- Spitzenleistung Heute -->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%004_R-%TT%%CC%00401" RefId="%AID%_O-%TT%%CC%004" Name="CH%C%PeakPowerToday" Text="PV-Spitzenleistung Heute" FunctionText="PVForecast: W" Priority="Low" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%004_R-%TT%%CC%00401" RefId="%AID%_O-%TT%%CC%004" Name="CH%C%PeakPowerToday" Text="{{0:PV %C%}}: Spitzenleistung Heute" FunctionText="PV %C%: Ausgang, Leistung, W" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" Priority="Low" />
               <!-- Spitzenzeitpunkt Heute -->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%005_R-%TT%%CC%00501" RefId="%AID%_O-%TT%%CC%005" Name="CH%C%PeakTimeToday" Text="Spitzenzeitpunkt Heute" FunctionText="PVForecast: Uhrzeit" Priority="Low" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%005_R-%TT%%CC%00501" RefId="%AID%_O-%TT%%CC%005" Name="CH%C%PeakTimeToday" Text="{{0:PV %C%}}: Spitzenzeitpunkt Heute" FunctionText="PV %C%: Ausgang, Uhrzeit" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" Priority="Low" />
             </ComObjectRefs>
           </Static>
+          <Dynamic>
+            <ChannelIndependentBlock>
+              <!-- Number of channels -->
+              <choose ParamRefId="%AID%_UP-%TT%00000_R-%TT%0000001">
+                <when test="&gt;=%C%">
+                  <ParameterBlock Id="%AID%_PB-nnn" Name="f%CC%PVF" Text="Kanal %C%: {{0: ...}}" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" Icon="white-balance-sunny" ShowInComObjectTree="true">
+                    <ParameterSeparator Id="%AID%_PS-nnn" Text="PV-Prognose Kanal %C%" UIHint="Headline" />
+                    <!-- Kanalname -->
+                    <ParameterRefRef RefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" />
+                    <!-- Prognose-Anbieter -->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%%CC%001_R-%TT%%CC%00101" />
+                    <!-- Automatische Aktualisierung -->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%%CC%002_R-%TT%%CC%00201" />
+                    <ParameterSeparator Id="%AID%_PS-nnn" Text="Standort" UIHint="Headline" />
+                    <!-- Ort für PV-Anlage -->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%%CC%003_R-%TT%%CC%00301" />
+                    <choose ParamRefId="%AID%_UP-%TT%%CC%003_R-%TT%%CC%00301">
+                      <when test="1">
+                        <!-- Breitengrad -->
+                        <ParameterRefRef RefId="%AID%_UP-%TT%%CC%004_R-%TT%%CC%00401" IndentLevel="1" />
+                        <!-- Längengrad -->
+                        <ParameterRefRef RefId="%AID%_UP-%TT%%CC%005_R-%TT%%CC%00501" IndentLevel="1" />
+                      </when>
+                    </choose>
+                    <ParameterSeparator Id="%AID%_PS-nnn" Text="Anlage" UIHint="Headline" />
+                    <!-- Neigungswinkel -->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%%CC%006_R-%TT%%CC%00601" />
+                    <ParameterSeparator Id="%AID%_PS-nnn" Text="0° = waagerecht, 90° = senkrecht" UIHint="Information" />
+                    <!-- Azimut -->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%%CC%007_R-%TT%%CC%00701" />
+                    <ParameterSeparator Id="%AID%_PS-nnn" Text="0° = Süd, -90° = Ost, 90° = West (forecast.solar Konvention: https://doc.forecast.solar/doku.php?id=api:estimate)" UIHint="Information" />
+                    <!-- Spitzenleistung -->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%%CC%008_R-%TT%%CC%00801" />
+                    <ComObjectRefRef RefId="%AID%_O-%TT%%CC%000_R-%TT%%CC%00001" />
+                    <ComObjectRefRef RefId="%AID%_O-%TT%%CC%001_R-%TT%%CC%00101" />
+                    <ComObjectRefRef RefId="%AID%_O-%TT%%CC%002_R-%TT%%CC%00201" />
+                    <ComObjectRefRef RefId="%AID%_O-%TT%%CC%003_R-%TT%%CC%00301" />
+                    <ComObjectRefRef RefId="%AID%_O-%TT%%CC%004_R-%TT%%CC%00401" />
+                    <ComObjectRefRef RefId="%AID%_O-%TT%%CC%005_R-%TT%%CC%00501" />
+                  </ParameterBlock>
+                </when>
+              </choose>
+            </ChannelIndependentBlock>
+          </Dynamic>
         </ApplicationProgram>
       </ApplicationPrograms>
     </Manufacturer>

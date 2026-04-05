@@ -39,6 +39,11 @@ protected:
     float _powerNow_W = 0.0f;
     float _powerNextHour_W = 0.0f;
 
+    // Day yield from watt_hours_day (provider-specific, more accurate than summing watts).
+    // Set by subclass fillForecast() when available. 0 means not provided.
+    float _todayYield_Wh    = 0.0f;
+    float _tomorrowYield_Wh = 0.0f;
+
     // Provider-specific HTTP fetch + JSON parse -> fills _hourlyForecast[]
     // Returns number of slots filled, or -1 on error
     virtual int16_t fillForecast(PVForecastHourlyData* slots, uint8_t maxSlots) = 0;

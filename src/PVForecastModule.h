@@ -5,11 +5,12 @@
 class PVForecastModule : public PVFChannelOwnerModule
 {
   public:
-    const char* name() override { return "PVForecastModule"; }
-    const char* version() override { return PVF_ModuleVersion; }
+    PVForecastModule() : PVFChannelOwnerModule(PVF_ChannelCount) {}
+    const std::string name() override { return "PVForecastModule"; }
+    const std::string version() override { return std::to_string(PVF_ModuleVersion); }
 
   protected:
-    OpenKNX::Channel* createChannel(uint8_t index) override;
+    OpenKNX::Channel* createChannel(uint8_t _channelIndex /* used in param macros, do not rename */) override;
 };
 
 extern PVForecastModule openknxPVForecastModule;

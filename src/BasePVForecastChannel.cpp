@@ -47,6 +47,7 @@ void BasePVForecastChannel::loop()
             now++;  // 0 is used as "uninitialized" marker
 
         if (_updateIntervalInMs > 0 &&
+            now >= 60000 &&  // wait 60s after boot for NTP sync
             (_lastApiCall == 0 || (now - _lastApiCall > _updateIntervalInMs)))
         {
             _lastApiCall = now;
@@ -60,7 +61,7 @@ void BasePVForecastChannel::processInputKo(GroupObject& ko)
     switch (ko.asap())
     {
         case PVF_KoRefreshData:
-            if (ko.value(DPT_Trigger))
+            if (time(nullptr) >= 1577836800LL)  // only fetch after NTP is synced
                 fetchData();
             break;
     }
@@ -78,8 +79,12 @@ bool BasePVForecastChannel::processCommand(const std::string cmd, bool diagnoseK
 
 void BasePVForecastChannel::fetchData()
 {
+    openknx.watchdog.loop();  // pet before blocking HTTP call (16s watchdog)
     logInfoP("Fetching PV forecast data (channel %d)", _channelIndex);
+    _todayYield_Wh    = 0.0f;
+    _tomorrowYield_Wh = 0.0f;
     int16_t count = fillForecast(_hourlyForecast, PVF_MAX_HOURLY_SLOTS);
+    openknx.watchdog.loop();  // pet after HTTP call returned
     if (count < 0)
     {
         logErrorP("Failed to fetch PV forecast (channel %d)", _channelIndex);
@@ -98,21 +103,32 @@ void BasePVForecastChannel::calculateDerivedValues()
     if (_numSlots == 0)
         return;
 
+    // Sanity check: require NTP time to be synced (any time after 2020-01-01)
     time_t now = time(nullptr);
+    if (now < 1577836800LL)  // 2020-01-01 00:00 UTC
+    {
+        logWarningP("System time not synced (time=%ld), skipping PV calculation", (long)now);
+        return;
+    }
 
     // Today/tomorrow day boundaries
+    // Use mktime(mday+N) instead of +86400 to handle DST transitions correctly.
     struct tm tmNow;
     localtime_r(&now, &tmNow);
     tmNow.tm_hour = 0; tmNow.tm_min = 0; tmNow.tm_sec = 0;
-    time_t todayStart    = mktime(&tmNow);
-    time_t tomorrowStart = todayStart + 86400;
-    time_t dayAfterStart = tomorrowStart + 86400;
+    time_t todayStart = mktime(&tmNow);
+    tmNow.tm_mday++;
+    time_t tomorrowStart = mktime(&tmNow);
+    tmNow.tm_mday++;
+    time_t dayAfterStart = mktime(&tmNow);
 
     // Reset derived values
     _today    = {};
     _tomorrow = {};
     _powerNow_W       = 0.0f;
     _powerNextHour_W  = 0.0f;
+
+    bool nextHourFound = false;
 
     for (uint8_t i = 0; i < _numSlots; i++)
     {
@@ -140,13 +156,16 @@ void BasePVForecastChannel::calculateDerivedValues()
             }
         }
 
-        // Current hour power
+        // Current hour power: slot whose period [ts, ts+3600) contains now
         if (ts <= now && now < ts + 3600)
             _powerNow_W = pwr;
 
-        // Next hour power
-        if (ts > now && ts <= now + 3600 && _powerNextHour_W == 0.0f)
+        // Next hour power: first slot that starts strictly after now
+        if (!nextHourFound && ts > now)
+        {
             _powerNextHour_W = pwr;
+            nextHourFound    = true;
+        }
     }
 }
 
@@ -155,19 +174,18 @@ void BasePVForecastChannel::publishKos()
     if (!_available)
         return;
 
-    // Today yield (kWh) - DPT 9.x (2-byte float)
-    KoPVF_CHYieldToday.value(_today.yieldTotal_kWh, DPT_Value_Power);
+    // Today yield (kWh) - DPST-13-13 (DPT 13.013, 4-byte signed int, unit kWh)
+    // Prefer accurate watt_hours_day value from API; fall back to summed watts.
+    int32_t todayKwh    = (int32_t)((_todayYield_Wh    > 0.0f) ? _todayYield_Wh    / 1000.0f : _today.yieldTotal_kWh);
+    int32_t tomorrowKwh = (int32_t)((_tomorrowYield_Wh > 0.0f) ? _tomorrowYield_Wh / 1000.0f : _tomorrow.yieldTotal_kWh);
+    KoPVF_CHYieldToday.value(todayKwh, DPT_ActiveEnergy_kWh);
 
     // Tomorrow yield (kWh)
-    KoPVF_CHYieldTomorrow.value(_tomorrow.yieldTotal_kWh, DPT_Value_Power);
+    KoPVF_CHYieldTomorrow.value(tomorrowKwh, DPT_ActiveEnergy_kWh);
 
-    // Current hour power (W)
+    // Power values in W (DPST-14-56 = DPT 14.056 "Leistung", 4-byte IEEE 754)
     KoPVF_CHPowerNow.value(_powerNow_W, DPT_Value_Power);
-
-    // Next hour power (W)
     KoPVF_CHPowerNextHour.value(_powerNextHour_W, DPT_Value_Power);
-
-    // Peak power today (W)
     KoPVF_CHPeakPowerToday.value(_today.peakPower_W, DPT_Value_Power);
 
     // Peak time today - DPT 10.001 (time of day)
@@ -175,7 +193,6 @@ void BasePVForecastChannel::publishKos()
     {
         struct tm tmPeak;
         localtime_r(&_today.peakTime, &tmPeak);
-        uint32_t t = ((uint32_t)tmPeak.tm_hour << 16) | ((uint32_t)tmPeak.tm_min << 8) | tmPeak.tm_sec;
-        KoPVF_CHPeakTimeToday.value(t, DPT_TimeOfDay);
+        KoPVF_CHPeakTimeToday.value(tmPeak, DPT_TimeOfDay);
     }
 }

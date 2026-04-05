@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <?xml-model href="../../Organization/knxprod-support/knx_project_14/knx-editor.xsd" type="application/xml" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <KNX xmlns:op="http://github.com/OpenKNX/OpenKNXproducer" xmlns="http://knx.org/xml/project/14" CreatedBy="KNX MT" ToolVersion="5.1.255.16695">
 	<op:config name="%PVF_NumChannelsDefault%" value="1" />
@@ -25,13 +25,13 @@
 									<Enumeration Text="Täglich"     Value="3" Id="%ENID%" />
 								</TypeRestriction>
 							</ParameterType>
-							<!-- Latitude/Longitude stored as degrees * 100 (int16) -->
-							<ParameterType Id="%AID%_PT-PVFLatitude" Name="PVFLatitude">
-								<TypeNumber SizeInBit="16" Type="signedInt" minInclusive="-9000" maxInclusive="9000" />
-							</ParameterType>
-							<ParameterType Id="%AID%_PT-PVFLongitude" Name="PVFLongitude">
-								<TypeNumber SizeInBit="16" Type="signedInt" minInclusive="-18000" maxInclusive="18000" />
-							</ParameterType>
+								<!-- Location type (0=Gerätestandort aus Allgemein, 1=Anderer Ort) -->
+								<ParameterType Id="%AID%_PT-PVFLocationType" Name="PVFLocationType">
+									<TypeRestriction Base="Value" SizeInBit="1">
+										<Enumeration Text="Gerätestandort aus Allgemein" Value="0" Id="%ENID%" />
+										<Enumeration Text="Anderer Ort" Value="1" Id="%ENID%" />
+									</TypeRestriction>
+								</ParameterType>
 							<!-- Plane tilt 0..90 degrees -->
 							<ParameterType Id="%AID%_PT-PVFTilt" Name="PVFTilt">
 								<TypeNumber SizeInBit="8" Type="unsignedInt" minInclusive="0" maxInclusive="90" />
@@ -57,13 +57,36 @@
 						</ParameterRefs>
 						<ComObjectTable>
 							<!-- Refresh PV Forecast Data -->
-							<ComObject Id="%AID%_O-%TT%00001" Name="RefreshData" Text="PV-Prognose aktualisieren" Number="0" FunctionText="PVForecast: Eingang, Auslöser" ObjectSize="1 Bit" ReadFlag="Disabled" WriteFlag="Enabled" CommunicationFlag="Enabled" TransmitFlag="Disabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+							<ComObject Id="%AID%_O-%TT%00001" Name="RefreshData" Text="PV-Prognose aktualisieren" Number="0" FunctionText="PV-Prognose: Eingang, Auslöser" ObjectSize="1 Bit" ReadFlag="Disabled" WriteFlag="Enabled" CommunicationFlag="Enabled" TransmitFlag="Disabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
 						</ComObjectTable>
 						<ComObjectRefs>
 							<!-- Refresh PV Forecast Data -->
 							<ComObjectRef Id="%AID%_O-%TT%00001_R-%TT%0000101" RefId="%AID%_O-%TT%00001" Name="RefreshData" Priority="Low" ObjectSize="1 Bit" DatapointType="DPST-1-17" />
 						</ComObjectRefs>
 					</Static>
+					<Dynamic>
+							<Channel Name="MainChannel%TT%" Text="PV-Prognose" Number="%PREFIX%" Id="%AID%_CH-%TT%" Icon="white-balance-sunny">
+							<ParameterBlock Id="%AID%_PB-nnn" Name="PVFSettings" Text="Allgemein" Icon="cog-outline">
+								<ParameterSeparator Id="%AID%_PS-nnn" Text="PV-Ertragsprognose" UIHint="Headline" />
+								<ParameterSeparator Id="%AID%_PS-nnn" Text="Version: %ModuleVersion%" />
+								<ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
+								<ParameterSeparator Id="%AID%_PS-nnn" Text="Kanalauswahl" UIHint="Headline" />
+								<ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%00000_R-%TT%0000001" />
+								<ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
+								<ComObjectRefRef RefId="%AID%_O-%TT%00001_R-%TT%0000101" />
+							</ParameterBlock>
+							<op:include href="PVForecastModule.templ.xml" xpath="//Dynamic/ChannelIndependentBlock/*" type="template" prefix="PVF" IsInner="true" />
+							<!-- More page: shown when fewer channels are selected than max -->
+							<choose ParamRefId="%AID%_UP-%TT%00000_R-%TT%0000001">
+								<when test="&lt;%N%">
+									<ParameterBlock Id="%AID%_PB-nnn" Name="PVFAdditionalChannels" Text="(mehr)" Icon="dots-horizontal">
+										<ParameterSeparator Id="%AID%_PS-nnn" Text="Kanalauswahl" UIHint="Headline" />
+										<ParameterRefRef RefId="%AID%_UP-%TT%00000_R-%TT%0000001" />
+									</ParameterBlock>
+								</when>
+							</choose>
+						</Channel>
+					</Dynamic>
 				</ApplicationProgram>
 			</ApplicationPrograms>
 		</Manufacturer>

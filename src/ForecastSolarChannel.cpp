@@ -15,11 +15,22 @@
 int16_t ForecastSolarChannel::fillForecast(PVForecastHourlyData* slots, uint8_t maxCount)
 {
     // Read ETS parameters
-    // ParamPVF_CHLatitude / ParamPVF_CHLongitude: stored as degrees * 100 (int16), so divide by 100.0
-    float lat  = (float)ParamPVF_CHLatitude  / 100.0f;
-    float lon  = (float)ParamPVF_CHLongitude / 100.0f;
-    int16_t dec = ParamPVF_CHTilt;      // degrees 0..90
-    int16_t az  = ParamPVF_CHAzimuth;   // degrees -180..180
+    // LocationType: false = use device location from Common module, true = use channel-specific location
+    float lat, lon;
+    if (ParamPVF_CHLocationType)
+    {
+        // Channel-specific location ("Anderer Ort")
+        lat = ParamPVF_CHLatitude;
+        lon = ParamPVF_CHLongitude;
+    }
+    else
+    {
+        // Device location from "Allgemein" (Common module)
+        lat = ParamBASE_Latitude;
+        lon = ParamBASE_Longitude;
+    }
+    int16_t dec = (int16_t)ParamPVF_CHTilt;   // degrees 0..90
+    int16_t az  = ParamPVF_CHAzimuth;          // degrees -180..180 (0=South, -90=East, 90=West)
     float kwp   = (float)ParamPVF_CHPeakPower / 100.0f;  // stored as kWp * 100
 
     char url[128];
@@ -30,7 +41,12 @@ int16_t ForecastSolarChannel::fillForecast(PVForecastHourlyData* slots, uint8_t 
 
     HTTPClient http;
     http.begin(url);
-    http.setTimeout(15000);
+    http.setTimeout(8000);  // 8s: well under 16s watchdog window
+#ifdef ARDUINO_ARCH_RP2040
+    if (String(url).startsWith("https://"))
+        http.setInsecure();
+#endif
+    openknx.watchdog.loop();  // pet immediately before blocking http.GET()
     int httpCode = http.GET();
     if (httpCode != HTTP_CODE_OK)
     {
@@ -39,9 +55,13 @@ int16_t ForecastSolarChannel::fillForecast(PVForecastHourlyData* slots, uint8_t 
         return -1;
     }
 
-    JsonDocument doc;
-    DeserializationError err = deserializeJson(doc, http.getStream());
+    // Buffer full response before parsing — getStream() can fail on chunked HTTPS
+    String responseBody = http.getString();
     http.end();
+
+    openknx.watchdog.loop();  // pet after data received, before JSON parse
+    JsonDocument doc;
+    DeserializationError err = deserializeJson(doc, responseBody);
 
     if (err)
     {
@@ -76,5 +96,26 @@ int16_t ForecastSolarChannel::fillForecast(PVForecastHourlyData* slots, uint8_t 
     }
 
     logDebugP("forecast.solar: parsed %d slots", count);
+
+    // Read accurate daily yields from watt_hours_day (avoids summing non-uniform slots)
+    // Keys are "YYYY-MM-DD", values are Wh for that day.
+    time_t now = time(nullptr);
+    struct tm tmNow;
+    localtime_r(&now, &tmNow);
+    char todayKey[11], tomorrowKey[11];
+    strftime(todayKey,    sizeof(todayKey),    "%Y-%m-%d", &tmNow);
+    tmNow.tm_mday++;
+    mktime(&tmNow);  // normalise (handles month/year rollover)
+    strftime(tomorrowKey, sizeof(tomorrowKey), "%Y-%m-%d", &tmNow);
+
+    JsonObject whdObj = doc["result"]["watt_hours_day"].as<JsonObject>();
+    if (whdObj[todayKey].is<float>())
+        _todayYield_Wh = whdObj[todayKey].as<float>();
+    if (whdObj[tomorrowKey].is<float>())
+        _tomorrowYield_Wh = whdObj[tomorrowKey].as<float>();
+
+    logDebugP("forecast.solar: today yield %.0fWh, tomorrow yield %.0fWh",
+              _todayYield_Wh, _tomorrowYield_Wh);
+
     return (int16_t)count;
 }
