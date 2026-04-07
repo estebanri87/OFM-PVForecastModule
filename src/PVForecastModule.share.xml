@@ -14,8 +14,7 @@
 							<ParameterType Id="%AID%_PT-PVFProviderType" Name="PVFProviderType">
 								<TypeRestriction Base="Value" SizeInBit="8" UIHint="DropDown">
 									<Enumeration Text="Deaktiviert"    Value="0" Id="%ENID%" />
-									<Enumeration Text="forecast.solar" Value="1" Id="%ENID%" />
-								</TypeRestriction>
+									<Enumeration Text="forecast.solar" Value="1" Id="%ENID%" />								<Enumeration Text="Solcast"        Value="2" Id="%ENID%" />								</TypeRestriction>
 							</ParameterType>
 							<ParameterType Id="%AID%_PT-PVFRefreshInterval" Name="PVFRefreshInterval">
 								<TypeRestriction Base="Value" SizeInBit="8">
@@ -36,15 +35,17 @@
 							<ParameterType Id="%AID%_PT-PVFTilt" Name="PVFTilt">
 								<TypeNumber SizeInBit="8" Type="unsignedInt" minInclusive="0" maxInclusive="90" />
 							</ParameterType>
-							<!-- Azimuth -180..180 degrees (0=South, -90=East, 90=West) -->
-							<ParameterType Id="%AID%_PT-PVFAzimuth" Name="PVFAzimuth">
-								<TypeNumber SizeInBit="16" Type="signedInt" minInclusive="-180" maxInclusive="180" />
+						<!-- Azimuth 0..359 degrees (compass: 0=North, 90=East, 180=South, 270=West) -->
+						<ParameterType Id="%AID%_PT-PVFAzimuth" Name="PVFAzimuth">
+							<TypeNumber SizeInBit="16" Type="unsignedInt" minInclusive="0" maxInclusive="359" />
 							</ParameterType>
 							<!-- Peak power in kWp * 100 (uint16), range 0..5000 → 0..50.00 kWp -->
 							<ParameterType Id="%AID%_PT-PVFPeakPower" Name="PVFPeakPower">
 								<TypeNumber SizeInBit="16" Type="unsignedInt" minInclusive="0" maxInclusive="5000" />
-							</ParameterType>
-						</ParameterTypes>
+							</ParameterType>						<!-- Solcast site resource ID (20 chars) -->
+						<ParameterType Id="%AID%_PT-PVFText20Byte" Name="PVFText20Byte">
+							<TypeText SizeInBit="160" />
+						</ParameterType>						</ParameterTypes>
 						<Parameters>
 							<!-- Number of channels -->
 							<Union SizeInBit="8">
@@ -73,7 +74,12 @@
 								<ParameterSeparator Id="%AID%_PS-nnn" Text="Kanalauswahl" UIHint="Headline" />
 								<ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%00000_R-%TT%0000001" />
 								<ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
-								<ComObjectRefRef RefId="%AID%_O-%TT%00001_R-%TT%0000101" />
+								<!-- Refresh: nur sichtbar wenn mindestens 1 Kanal aktiviert -->
+								<choose ParamRefId="%AID%_UP-%TT%00000_R-%TT%0000001">
+									<when test="&gt;=1">
+										<ComObjectRefRef RefId="%AID%_O-%TT%00001_R-%TT%0000101" />
+									</when>
+								</choose>
 							</ParameterBlock>
 							<op:include href="PVForecastModule.templ.xml" xpath="//Dynamic/ChannelIndependentBlock/*" type="template" prefix="PVF" IsInner="true" />
 							<!-- More page: shown when fewer channels are selected than max -->

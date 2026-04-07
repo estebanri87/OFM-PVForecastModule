@@ -40,13 +40,25 @@
               <!-- Azimuth degrees (Bytes 12-13, signed) -->
               <Union SizeInBit="16">
                 <Memory CodeSegment="%MID%" Offset="12" BitOffset="0" />
-                <Parameter Id="%AID%_UP-%TT%%CC%007" Name="CH%C%Azimuth" ParameterType="%AID%_PT-PVFAzimuth" Offset="0" BitOffset="0" Text="Azimut" SuffixText=" °" Value="0" />
+                <Parameter Id="%AID%_UP-%TT%%CC%007" Name="CH%C%Azimuth" ParameterType="%AID%_PT-PVFAzimuth" Offset="0" BitOffset="0" Text="Azimut" SuffixText=" °" Value="180" />
               </Union>
 
               <!-- Peak power kWp * 100 (Bytes 14-15) -->
               <Union SizeInBit="16">
                 <Memory CodeSegment="%MID%" Offset="14" BitOffset="0" />
                 <Parameter Id="%AID%_UP-%TT%%CC%008" Name="CH%C%PeakPower" ParameterType="%AID%_PT-PVFPeakPower" Offset="0" BitOffset="0" Text="Spitzenleistung" SuffixText=" × 10 Wp" Value="500" />
+              </Union>
+
+              <!-- Solcast API key (40 bytes text, Bytes 16-55) -->
+              <Union SizeInBit="320">
+                <Memory CodeSegment="%MID%" Offset="16" BitOffset="0" />
+                <Parameter Id="%AID%_UP-%TT%%CC%009" Name="CH%C%SolcastApiKey" ParameterType="%AID%_PT-Text40Byte" Offset="0" BitOffset="0" Text="API-Schlüssel" Value="" />
+              </Union>
+
+              <!-- Solcast Site Resource ID (20 bytes text, Bytes 56-75) -->
+              <Union SizeInBit="160">
+                <Memory CodeSegment="%MID%" Offset="56" BitOffset="0" />
+                <Parameter Id="%AID%_UP-%TT%%CC%010" Name="CH%C%SolcastSiteId" ParameterType="%AID%_PT-PVFText20Byte" Offset="0" BitOffset="0" Text="Site Resource ID" Value="" />
               </Union>
             </Parameters>
             <ParameterRefs>
@@ -68,6 +80,10 @@
               <ParameterRef Id="%AID%_UP-%TT%%CC%007_R-%TT%%CC%00701" RefId="%AID%_UP-%TT%%CC%007" />
               <!-- Peak power -->
               <ParameterRef Id="%AID%_UP-%TT%%CC%008_R-%TT%%CC%00801" RefId="%AID%_UP-%TT%%CC%008" />
+              <!-- Solcast API key -->
+              <ParameterRef Id="%AID%_UP-%TT%%CC%009_R-%TT%%CC%00901" RefId="%AID%_UP-%TT%%CC%009" />
+              <!-- Solcast Site Resource ID -->
+              <ParameterRef Id="%AID%_UP-%TT%%CC%010_R-%TT%%CC%01001" RefId="%AID%_UP-%TT%%CC%010" />
             </ParameterRefs>
             <ComObjectTable>
               <!-- PV-Ertrag Heute (kWh) -->
@@ -111,6 +127,18 @@
                     <ParameterRefRef RefId="%AID%_UP-%TT%%CC%001_R-%TT%%CC%00101" />
                     <!-- Automatische Aktualisierung -->
                     <ParameterRefRef RefId="%AID%_UP-%TT%%CC%002_R-%TT%%CC%00201" />
+                    <!-- Solcast API key - nur bei Anbieter Solcast -->
+                    <choose ParamRefId="%AID%_UP-%TT%%CC%001_R-%TT%%CC%00101">
+                      <when test="2">
+                        <ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
+                        <ParameterSeparator Id="%AID%_PS-nnn" Text="Solcast Zugangsdaten" UIHint="Headline" />
+                        <ParameterSeparator Id="%AID%_PS-nnn" Text="Kostenloser API-Schlüssel unter https://solcast.com (max. 10 Abfragen/Tag)" UIHint="Information" />
+                        <ParameterRefRef RefId="%AID%_UP-%TT%%CC%009_R-%TT%%CC%00901" />
+                        <ParameterSeparator Id="%AID%_PS-nnn" Text="Site Resource ID aus dem Solcast-Dashboard (z.B. 47d5-0628-9935-7493)" UIHint="Information" />
+                        <ParameterRefRef RefId="%AID%_UP-%TT%%CC%010_R-%TT%%CC%01001" />
+                      </when>
+                    </choose>
+                    <ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
                     <ParameterSeparator Id="%AID%_PS-nnn" Text="Standort" UIHint="Headline" />
                     <!-- Ort für PV-Anlage -->
                     <ParameterRefRef RefId="%AID%_UP-%TT%%CC%003_R-%TT%%CC%00301" />
@@ -122,13 +150,14 @@
                         <ParameterRefRef RefId="%AID%_UP-%TT%%CC%005_R-%TT%%CC%00501" IndentLevel="1" />
                       </when>
                     </choose>
+                    <ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
                     <ParameterSeparator Id="%AID%_PS-nnn" Text="Anlage" UIHint="Headline" />
                     <!-- Neigungswinkel -->
                     <ParameterRefRef RefId="%AID%_UP-%TT%%CC%006_R-%TT%%CC%00601" />
                     <ParameterSeparator Id="%AID%_PS-nnn" Text="0° = waagerecht, 90° = senkrecht" UIHint="Information" />
                     <!-- Azimut -->
                     <ParameterRefRef RefId="%AID%_UP-%TT%%CC%007_R-%TT%%CC%00701" />
-                    <ParameterSeparator Id="%AID%_PS-nnn" Text="0° = Süd, -90° = Ost, 90° = West (forecast.solar Konvention: https://doc.forecast.solar/doku.php?id=api:estimate)" UIHint="Information" />
+                    <ParameterSeparator Id="%AID%_PS-nnn" Text="0° = Nord, 90° = Ost, 180° = Süd, 270° = West" UIHint="Information" />
                     <!-- Spitzenleistung -->
                     <ParameterRefRef RefId="%AID%_UP-%TT%%CC%008_R-%TT%%CC%00801" />
                     <ComObjectRefRef RefId="%AID%_O-%TT%%CC%000_R-%TT%%CC%00001" />

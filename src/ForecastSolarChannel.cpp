@@ -8,7 +8,7 @@
 //   lat  - latitude  (degrees, float)
 //   lon  - longitude (degrees, float)
 //   dec  - plane declination 0..90 (tilt from horizontal, int)
-//   az   - azimuth -180..180 (0=South, -90=East, 90=West, int)
+//   az   - azimuth -180..180 (0=South, -90=East, 90=West, int) — converted from compass internally
 //   kwp  - installed peak power (kWp, float)
 // Response contains "result": { "watts": { "YYYY-MM-DD HH:MM:SS": <W>, ... }, ... }
 
@@ -30,7 +30,8 @@ int16_t ForecastSolarChannel::fillForecast(PVForecastHourlyData* slots, uint8_t 
         lon = ParamBASE_Longitude;
     }
     int16_t dec = (int16_t)ParamPVF_CHTilt;   // degrees 0..90
-    int16_t az  = ParamPVF_CHAzimuth;          // degrees -180..180 (0=South, -90=East, 90=West)
+    // Compass (0=N,90=E,180=S,270=W) → forecast.solar (0=S,-90=E,90=W): subtract 180
+    int16_t az  = (int16_t)ParamPVF_CHAzimuth - 180;
     float kwp   = (float)ParamPVF_CHPeakPower / 100.0f;  // stored as kWp * 100
 
     char url[128];

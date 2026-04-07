@@ -9,6 +9,7 @@ Automatisierungslogik (z. B. Waschmaschine bei hohem PV-Ertrag starten) wird nic
 
 Folgende Anbieter stehen zur Auswahl:
 * [forecast.solar](#forecastsolar) – weltweit, kein API-Key für Basisnutzung erforderlich
+* [Solcast](#solcast) – weltweit, kostenloser Hobbyisten-API-Key erforderlich
 
 ---
 
@@ -25,7 +26,18 @@ Weitere Informationen: https://forecast.solar
 
 ---
 
-# Kanaleinstellungen
+<!-- DOC -->
+## Solcast
+
+Solcast liefert hochauflösende PV-Ertragsprognosen in 30-Minuten-Schritten basierend auf Satellitendaten und maschinellem Lernen.  
+Für die Nutzung ist ein kostenloser Hobbyisten-API-Key erforderlich (bis zu 10 Abfragen/Tag kostenlos).  
+Der API-Key wird im ETS-Parameter **Solcast API-Key** hinterlegt.  
+Die Azimut-Konvention entspricht der Kompassrose: 0° = Nord, 90° = Ost, 180° = Süd, 270° = West.  
+Weitere Informationen: https://solcast.com
+
+<!-- DOCEND -->
+
+---
 
 <!-- DOC -->
 ## Prognose-Anbieter
@@ -36,6 +48,7 @@ Wählt den Datenanbieter für diesen Kanal.
 |------|-----------|
 | Deaktiviert | Kanal ist inaktiv |
 | forecast.solar | Solarprognose via forecast.solar API |
+| Solcast | Solarprognose via Solcast API (API-Key erforderlich) |
 
 <!-- DOCEND -->
 
@@ -85,8 +98,18 @@ Typischer Wert für Schrägdächer: 30–40°.
 <!-- DOC -->
 ## Azimut
 
-Ausrichtung der PV-Module in Grad.  
-0° = Süden, -90° = Osten, +90° = Westen, ±180° = Norden.
+Ausrichtung der PV-Module als Kompasswinkel in Grad.  
+0° = Nord, 90° = Ost, 180° = Süd, 270° = West.  
+Typischer Wert für eine südlich ausgerichtete Anlage: **180°**.
+
+<!-- DOCEND -->
+
+<!-- DOC -->
+## Solcast API-Key
+
+Nur relevant bei Solcast: API-Key des Solcast-Hobbyisten-Kontos.  
+Der Schlüssel kann kostenlos unter https://toolkit.solcast.com.au/register/hobbyist registriert werden.  
+Maximal 40 Zeichen.
 
 <!-- DOCEND -->
 
