@@ -119,47 +119,47 @@
               <!-- Number of channels -->
               <choose ParamRefId="%AID%_UP-%TT%00000_R-%TT%0000001">
                 <when test="&gt;=%C%">
-                  <ParameterBlock Id="%AID%_PB-nnn" Name="f%CC%PVF" Text="Kanal %C%: {{0: ...}}" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" Icon="white-balance-sunny" ShowInComObjectTree="true">
+                  <ParameterBlock Id="%AID%_PB-nnn" Name="f%CC%PVF" Text="Kanal %C%: {{0: ...}}" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" Icon="white-balance-sunny" ShowInComObjectTree="true" HelpContext="PVF-Prognose-Anbieter">
                     <ParameterSeparator Id="%AID%_PS-nnn" Text="PV-Prognose Kanal %C%" UIHint="Headline" />
                     <!-- Kanalname -->
                     <ParameterRefRef RefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" />
                     <!-- Prognose-Anbieter -->
-                    <ParameterRefRef RefId="%AID%_UP-%TT%%CC%001_R-%TT%%CC%00101" />
+                    <ParameterRefRef RefId="%AID%_UP-%TT%%CC%001_R-%TT%%CC%00101" HelpContext="PVF-Prognose-Anbieter" />
                     <!-- Automatische Aktualisierung -->
-                    <ParameterRefRef RefId="%AID%_UP-%TT%%CC%002_R-%TT%%CC%00201" />
+                    <ParameterRefRef RefId="%AID%_UP-%TT%%CC%002_R-%TT%%CC%00201" HelpContext="PVF-Automatische-Aktualisierung" />
                     <!-- Solcast API key - nur bei Anbieter Solcast -->
                     <choose ParamRefId="%AID%_UP-%TT%%CC%001_R-%TT%%CC%00101">
                       <when test="2">
                         <ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
                         <ParameterSeparator Id="%AID%_PS-nnn" Text="Solcast Zugangsdaten" UIHint="Headline" />
                         <ParameterSeparator Id="%AID%_PS-nnn" Text="Kostenloser API-Schlüssel unter https://solcast.com (max. 10 Abfragen/Tag)" UIHint="Information" />
-                        <ParameterRefRef RefId="%AID%_UP-%TT%%CC%009_R-%TT%%CC%00901" />
+                        <ParameterRefRef RefId="%AID%_UP-%TT%%CC%009_R-%TT%%CC%00901" HelpContext="PVF-Solcast-API-Key" />
                         <ParameterSeparator Id="%AID%_PS-nnn" Text="Site Resource ID aus dem Solcast-Dashboard (z.B. 47d5-0628-9935-7493)" UIHint="Information" />
-                        <ParameterRefRef RefId="%AID%_UP-%TT%%CC%010_R-%TT%%CC%01001" />
+                        <ParameterRefRef RefId="%AID%_UP-%TT%%CC%010_R-%TT%%CC%01001" HelpContext="PVF-Solcast-API-Key" />
                       </when>
                     </choose>
                     <ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
                     <ParameterSeparator Id="%AID%_PS-nnn" Text="Standort" UIHint="Headline" />
                     <!-- Ort für PV-Anlage -->
-                    <ParameterRefRef RefId="%AID%_UP-%TT%%CC%003_R-%TT%%CC%00301" />
+                    <ParameterRefRef RefId="%AID%_UP-%TT%%CC%003_R-%TT%%CC%00301" HelpContext="PVF-Breitengrad" />
                     <choose ParamRefId="%AID%_UP-%TT%%CC%003_R-%TT%%CC%00301">
                       <when test="1">
                         <!-- Breitengrad -->
-                        <ParameterRefRef RefId="%AID%_UP-%TT%%CC%004_R-%TT%%CC%00401" IndentLevel="1" />
+                        <ParameterRefRef RefId="%AID%_UP-%TT%%CC%004_R-%TT%%CC%00401" IndentLevel="1" HelpContext="PVF-Breitengrad" />
                         <!-- Längengrad -->
-                        <ParameterRefRef RefId="%AID%_UP-%TT%%CC%005_R-%TT%%CC%00501" IndentLevel="1" />
+                        <ParameterRefRef RefId="%AID%_UP-%TT%%CC%005_R-%TT%%CC%00501" IndentLevel="1" HelpContext="PVF-Laengengrad" />
                       </when>
                     </choose>
                     <ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
                     <ParameterSeparator Id="%AID%_PS-nnn" Text="Anlage" UIHint="Headline" />
                     <!-- Neigungswinkel -->
-                    <ParameterRefRef RefId="%AID%_UP-%TT%%CC%006_R-%TT%%CC%00601" />
+                    <ParameterRefRef RefId="%AID%_UP-%TT%%CC%006_R-%TT%%CC%00601" HelpContext="PVF-Neigungswinkel" />
                     <ParameterSeparator Id="%AID%_PS-nnn" Text="0° = waagerecht, 90° = senkrecht" UIHint="Information" />
                     <!-- Azimut -->
-                    <ParameterRefRef RefId="%AID%_UP-%TT%%CC%007_R-%TT%%CC%00701" />
+                    <ParameterRefRef RefId="%AID%_UP-%TT%%CC%007_R-%TT%%CC%00701" HelpContext="PVF-Azimut" />
                     <ParameterSeparator Id="%AID%_PS-nnn" Text="0° = Nord, 90° = Ost, 180° = Süd, 270° = West" UIHint="Information" />
                     <!-- Spitzenleistung -->
-                    <ParameterRefRef RefId="%AID%_UP-%TT%%CC%008_R-%TT%%CC%00801" />
+                    <ParameterRefRef RefId="%AID%_UP-%TT%%CC%008_R-%TT%%CC%00801" HelpContext="PVF-Spitzenleistung" />
                     <ComObjectRefRef RefId="%AID%_O-%TT%%CC%000_R-%TT%%CC%00001" />
                     <ComObjectRefRef RefId="%AID%_O-%TT%%CC%001_R-%TT%%CC%00101" />
                     <ComObjectRefRef RefId="%AID%_O-%TT%%CC%002_R-%TT%%CC%00201" />

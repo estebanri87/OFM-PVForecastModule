@@ -13,9 +13,27 @@ Folgende Anbieter stehen zur Auswahl:
 
 ---
 
+## Inhaltsverzeichnis
+
+- [Anbieter](#anbieter)
+  - [forecast.solar](#forecastsolar)
+  - [Solcast](#solcast)
+- [ETS-Parameter](#prognose-anbieter)
+  - [Prognose-Anbieter](#prognose-anbieter)
+  - [Automatische Aktualisierung](#automatische-aktualisierung)
+  - [Breitengrad](#breitengrad--100)
+  - [Längengrad](#längengrad--100)
+  - [Neigungswinkel](#neigungswinkel)
+  - [Azimut](#azimut)
+  - [Solcast API-Key](#solcast-api-key)
+  - [Spitzenleistung](#spitzenleistung-kwp--100)
+- [Gruppenobjekte](#gruppenobjekte)
+
+---
+
 # Anbieter
 
-<!-- DOC -->
+<!-- DOC HelpContext="forecast-solar" -->
 ## forecast.solar
 
 forecast.solar liefert stündliche PV-Ertragsprognosen basierend auf Standort, Modulneigung, Azimut und installierter Spitzenleistung.  
@@ -26,7 +44,7 @@ Weitere Informationen: https://forecast.solar
 
 ---
 
-<!-- DOC -->
+<!-- DOC HelpContext="Solcast" -->
 ## Solcast
 
 Solcast liefert hochauflösende PV-Ertragsprognosen in 30-Minuten-Schritten basierend auf Satellitendaten und maschinellem Lernen.  
@@ -39,7 +57,7 @@ Weitere Informationen: https://solcast.com
 
 ---
 
-<!-- DOC -->
+<!-- DOC HelpContext="Prognose-Anbieter" -->
 ## Prognose-Anbieter
 
 Wählt den Datenanbieter für diesen Kanal.
@@ -52,7 +70,7 @@ Wählt den Datenanbieter für diesen Kanal.
 
 <!-- DOCEND -->
 
-<!-- DOC -->
+<!-- DOC HelpContext="Automatische-Aktualisierung" -->
 ## Automatische Aktualisierung
 
 Legt fest, in welchem Intervall die Prognose neu abgerufen wird.
@@ -68,7 +86,7 @@ Empfohlen: **Jede Stunde**.
 
 <!-- DOCEND -->
 
-<!-- DOC -->
+<!-- DOC HelpContext="Breitengrad" -->
 ## Breitengrad (× 100)
 
 Geografischer Breitengrad des Standorts, multipliziert mit 100.  
@@ -77,7 +95,7 @@ Bereich: -90,00 bis +90,00 (Wert -9000 bis 9000).
 
 <!-- DOCEND -->
 
-<!-- DOC -->
+<!-- DOC HelpContext="Laengengrad" -->
 ## Längengrad (× 100)
 
 Geografischer Längengrad des Standorts, multipliziert mit 100.  
@@ -86,7 +104,7 @@ Bereich: -180,00 bis +180,00 (Wert -18000 bis 18000).
 
 <!-- DOCEND -->
 
-<!-- DOC -->
+<!-- DOC HelpContext="Neigungswinkel" -->
 ## Neigungswinkel
 
 Neigung der PV-Module gegenüber der Horizontalen in Grad.  
@@ -95,7 +113,7 @@ Typischer Wert für Schrägdächer: 30–40°.
 
 <!-- DOCEND -->
 
-<!-- DOC -->
+<!-- DOC HelpContext="Azimut" -->
 ## Azimut
 
 Ausrichtung der PV-Module als Kompasswinkel in Grad.  
@@ -104,7 +122,7 @@ Typischer Wert für eine südlich ausgerichtete Anlage: **180°**.
 
 <!-- DOCEND -->
 
-<!-- DOC -->
+<!-- DOC HelpContext="Solcast-API-Key" -->
 ## Solcast API-Key
 
 Nur relevant bei Solcast: API-Key des Solcast-Hobbyisten-Kontos.  
@@ -113,7 +131,7 @@ Maximal 40 Zeichen.
 
 <!-- DOCEND -->
 
-<!-- DOC -->
+<!-- DOC HelpContext="Spitzenleistung" -->
 ## Spitzenleistung (kWp × 100)
 
 Installierte PV-Spitzenleistung in kWp, multipliziert mit 100.  
